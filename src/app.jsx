@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
+import SingleCitation from 'single-citation';
+
 class App extends Component {
   render() {
     return (
       <div>
-        <h1>Hejsan</h1>
+        <SingleCitation />
       </div>
     );
   }
