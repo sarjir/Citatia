@@ -6,7 +6,7 @@ import {
 } from 'graphql';
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
-import mongoose from 'mongoose';
+import database from './database';
 
 const app = express();
 
@@ -31,14 +31,7 @@ const Schema = new GraphQLSchema({
 	query: Query
 });
 
-mongoose.connect('mongodb://localhost/citatia');
-
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-	
-});
+database.init();
 
 app.use(express.static('build'));
 
@@ -49,4 +42,4 @@ app.use('/graphql', graphqlHTTP({
 
 app.listen(3000);
 
-console.log('Listening on port 3000');
+console.log('Listening on port 3000'); // eslint-disable-line no-console
