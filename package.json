@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --max-warnings 0",
     "dev": "cp -R static/* build; npm run server &amp; node_modules/webpack/bin/webpack.js --watch --progress --colors",
-    "server": "node_modules/babel-cli/bin/babel-node.js server/index.js"
+    "start": "node_modules/babel-cli/bin/babel-node.js server/index.js"
   },
   "author": "",
   "license": "ISC",
