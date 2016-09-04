@@ -38,6 +38,7 @@
     "express-graphql": "^0.5.4",
     "graphiql": "^0.7.8",
     "graphql": "^0.7.0",
+    "mongoose": "^4.6.0",
     "react-router": "^2.7.0",
     "redux": "^3.5.2",
     "redux-thunk": "^2.1.0"

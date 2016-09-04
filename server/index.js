@@ -6,6 +6,7 @@ import {
 } from 'graphql';
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
+import mongoose from 'mongoose';
 
 const app = express();
 
@@ -28,6 +29,15 @@ const Query = new GraphQLObjectType({
 
 const Schema = new GraphQLSchema({
 	query: Query
+});
+
+mongoose.connect('mongodb://localhost/citatia');
+
+const db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+	
 });
 
 app.use(express.static('build'));
