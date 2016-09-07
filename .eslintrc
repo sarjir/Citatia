@@ -9,5 +9,7 @@
     "node": true,
     "es6": true
   },
-  "rules": {}
+  "rules": {
+    "semi": [2, "always"]
+  }
 }
