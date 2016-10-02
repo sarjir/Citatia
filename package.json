@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --max-warnings 0",
-    "dev": "cp -R static/* build; node_modules/webpack/bin/webpack.js --watch --progress --colors",
+    "static": "./static.sh",
+    "dev": "npm run static; node_modules/webpack/bin/webpack.js --watch --progress --colors",
     "dev-server": "cp -R static/* build; npm start & node_modules/webpack/bin/webpack.js --watch --progress --colors",
     "start": "DB_HOST=localhost DB_NAME=citatia node_modules/babel-cli/bin/babel-node.js server/index.js"
   },
