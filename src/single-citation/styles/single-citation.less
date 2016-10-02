@@ -1,18 +1,47 @@
+body {
+  margin: 0;
+}
+
 .background {
-  background-color: green;
+  background-image: url("/Users/Sara/Documents/Webbutveckling/Citatia/src/images/background.jpg");
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position-x: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
 }
 
 .wrapper {
+  margin-top: 10%;
+  font-family: 'Raleway', sans-serif;
   display: flex;
   position: absolute;
-  top: 50%;
+  top: 20%;
   left: 50%;
   transform: translate(-50%, -50%);
   flex-direction: column;
-  // align-items: center;
 }
 
+.citation {
+  background-image: linear-gradient(
+    to right,
+    rgba(355, 355, 355, 0),
+    rgba(355, 355, 355, 0.8),
+    rgba(355, 355, 355, 0)
+    );
+  padding: 20px 70px;
+}
+
+.userImage {
+  border-radius: 50%;
+  max-width: 150px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -80%;
+}
 .description {
-  // display: flex;
-  // flex-direction: row;
+  display: flex;
+  flex-direction: column;
 }

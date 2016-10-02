@@ -40,3 +40,4 @@ build
 *.swp
 .yarnclean
 yarn.lock
+.DS_store

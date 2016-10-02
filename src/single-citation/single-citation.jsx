@@ -1,20 +1,20 @@
 import React, { PropTypes, Component } from 'react';
-import styles from './styles/single-citation.less'
+import styles from './styles/single-citation.less';
 
 class SingleCitation extends Component {
   static propTypes = {
     citation: PropTypes.string,
     author: PropTypes.string,
     date: PropTypes.string,
-    image: PropTypes.string
-  }
+    image: PropTypes.string,
+  };
 
   static defaultProps = {
-    citation: "Jag suger, men du sväljer",
-    author: "Sara Jirholm",
-    date: "2016-09-12",
-    image: "/home/sara/Documents/Development/citatApp/src/images/H6YPV8J8TU.jpg"
-  }
+    citation: 'Jag suger, men du sväljer',
+    author: 'Sara Jirholm',
+    date: '2016-09-12',
+    image: '/home/sara/Documents/Development/citatApp/src/images/H6YPV8J8TU.jpg',
+  };
 
   static className = 'singleCitation-singleCitation';
 
@@ -25,16 +25,28 @@ class SingleCitation extends Component {
   render() {
     return (
       <div
-        className={ styles.wrapper }
-        style={ {backgroundImage: this.props.image} }
+        className={ styles.background }
       >
-        <h1>
-          "{ this.props.citation }"
-        </h1>
         <div
-          className={ styles.description }
+          className={ styles.wrapper }
         >
-          <p>{ this.props.author }, { this.props.date }</p>
+          <img
+            className={ styles.userImage }
+            src='/Users/Sara/Documents/Webbutveckling/Citatia/src/images/user.jpg'
+          />
+          <div
+            className={ styles.citation }
+          >
+            <h1>
+              "{ this.props.citation }"
+            </h1>
+            <div
+              className={ styles.description }
+            >
+              <span>{ this.props.author }</span>
+              <span>{ this.props.date }</span>
+            </div>
+          </div>
         </div>
       </div>
     );
