@@ -9,8 +9,8 @@ const User = new GraphQLObjectType({
 	fields: () => ({
 		_id: {
 			type: GraphQLString,
-			resolve(rootValue) {
-				return rootValue._id.toString();
+			resolve({ _id }) {
+				return _id.toString();
 			}
 		},
 		username: {
@@ -22,7 +22,7 @@ const User = new GraphQLObjectType({
 		createdAt: {
 			type: GraphQLInt,
 			resolve({ createdAt }) {
-				if (createdAt) {
+				if (createdAt instanceof Date) {
 					return createdAt.getTime() / 1000;
 				}
 			}
@@ -30,7 +30,7 @@ const User = new GraphQLObjectType({
 		lastLogin: {
 			type: GraphQLInt,
 			resolve({ lastLogin }) {
-				if (lastLogin) {
+				if (lastLogin instanceof Date) {
 					return lastLogin.getTime() / 1000;
 				}
 			}

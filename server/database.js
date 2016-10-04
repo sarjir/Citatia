@@ -1,11 +1,5 @@
 import mongoose from 'mongoose';
 
-// Models
-import citationModel from './models/citation';
-import userModel from './models/user';
-import reactionModel from './models/reaction';
-import reactionTypeModel from './models/reaction-type';
-
 class Database {
 	initialized = false;
 
@@ -26,12 +20,7 @@ class Database {
 
 	handleError = console.error.bind(console, 'connection error:'); // eslint-disable-line no-console
 
-	handleOpen = () => {
-		this.CitationModel = citationModel();
-		this.UserModel = userModel();
-		this.Reaction = reactionModel();
-		this.ReactionType = reactionTypeModel();
-	};
+	handleOpen = () => {};
 }
 
 export default new Database();
