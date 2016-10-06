@@ -21,16 +21,22 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   flex-direction: column;
+  width: 70%;
+  padding: 80px 40px;
+  align-items: center;
+
+  background-image: linear-gradient(
+    to left,
+    rgba(355, 355, 355, 0) 0%,
+    rgba(355, 355, 355, 0.8) 11%,
+    rgba(355, 355, 355, 0.8) 91%,
+    rgba(355, 355, 355, 0) 100%
+    );
 }
 
 .citation {
-  background-image: linear-gradient(
-    to right,
-    rgba(355, 355, 355, 0),
-    rgba(355, 355, 355, 0.8),
-    rgba(355, 355, 355, 0)
-    );
-  padding: 20px 70px;
+  // width: 50%
+  // padding: 40px;
 }
 
 .userImage {
@@ -39,9 +45,14 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: -80%;
+  top: -40%;
 }
+
 .description {
   display: flex;
   flex-direction: column;
 }
+
+.actions{}
+
+.singleAction{}

@@ -7,6 +7,9 @@ class SingleCitation extends Component {
     author: PropTypes.string,
     date: PropTypes.string,
     image: PropTypes.string,
+    actions: PropTypes.arrayOf(
+      PropTypes.string
+    ),
   };
 
   static defaultProps = {
@@ -14,6 +17,11 @@ class SingleCitation extends Component {
     author: 'Sara Jirholm',
     date: '2016-09-12',
     image: '/home/sara/Documents/Development/citatApp/src/images/H6YPV8J8TU.jpg',
+    actions: [
+      'like',
+      'heart',
+      'joy',
+    ],
   };
 
   static className = 'singleCitation-singleCitation';
@@ -22,11 +30,27 @@ class SingleCitation extends Component {
     return SingleCitation.className;
   };
 
+  renderActions() {
+    const actions = this.props.actions.map((action, i) => {
+      return (
+        <div
+          className={ styles.singleAction }
+          key={ i }
+        >
+          { this.action }
+        </div>
+      );
+    });
+
+    return actions;
+  }
+
   render() {
     return (
-      <div
-        className={ styles.background }
-      >
+      <div>
+        <div
+          className={ styles.background }
+        />
         <div
           className={ styles.wrapper }
         >
@@ -45,6 +69,11 @@ class SingleCitation extends Component {
             >
               <span>{ this.props.author }</span>
               <span>{ this.props.date }</span>
+            </div>
+            <div
+              className={ styles.actions }
+            >
+              { this.renderActions() }
             </div>
           </div>
         </div>
