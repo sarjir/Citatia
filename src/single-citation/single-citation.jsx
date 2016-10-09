@@ -8,7 +8,10 @@ class SingleCitation extends Component {
     date: PropTypes.string,
     image: PropTypes.string,
     actions: PropTypes.arrayOf(
-      PropTypes.string
+      PropTypes.shape({
+        action: PropTypes.string,
+        count: PropTypes.number
+      }),
     ),
   };
 
@@ -18,9 +21,18 @@ class SingleCitation extends Component {
     date: '2016-09-12',
     image: '/home/sara/Documents/Development/citatApp/src/images/H6YPV8J8TU.jpg',
     actions: [
-      'like',
-      'heart',
-      'joy',
+      {
+        action: '\u{1F44D}',
+        count: 3
+      },
+      {
+        action: '\u2764',
+        count: 34
+      },
+      {
+        action: '\u{1F602}',
+        count: 234
+      },
     ],
   };
 
@@ -35,9 +47,18 @@ class SingleCitation extends Component {
       return (
         <div
           className={ styles.singleAction }
-          key={ i }
         >
-          { this.action }
+          <span
+            className={ styles.actionCount }
+          >
+            { `${action.count}` }
+          </span>
+          <div
+            className={ styles.actionSymbol }
+            key={ i }
+          >
+            { `${action.action}` }
+          </div>
         </div>
       );
     });
@@ -62,7 +83,7 @@ class SingleCitation extends Component {
             className={ styles.citation }
           >
             <h1>
-              "{ this.props.citation }"
+              {`"${ this.props.citation }"`}
             </h1>
             <div
               className={ styles.description }
