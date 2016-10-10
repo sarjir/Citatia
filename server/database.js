@@ -15,12 +15,9 @@ class Database {
 		this.db = mongoose.connection;
 
 		this.db.on('error', this.handleError);
-		this.db.once('open', this.handleOpen);
 	}
 
 	handleError = console.error.bind(console, 'connection error:'); // eslint-disable-line no-console
-
-	handleOpen = () => {};
 }
 
 export default new Database();
