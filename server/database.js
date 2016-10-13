@@ -10,7 +10,7 @@ class Database {
 
 		this.initialized = true;
 
-		mongoose.connect(`mongodb://${process.env.DB_HOST}/${process.env.DB_NAME}`);
+		mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT || 27017}/${process.env.DB_NAME}`);
 
 		this.db = mongoose.connection;
 

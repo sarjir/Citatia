@@ -7,9 +7,9 @@
     "test": "node_modules/mocha/bin/mocha --compilers js:babel-core/register --require babel-polyfill $(find server -name \"*.test.js\")",
     "lint": "eslint . --max-warnings 0",
     "static": "./static.sh",
+    "build": "npm run static; node_modules/webpack/bin/webpack.js --progress --colors",
     "dev": "npm run static; node_modules/webpack/bin/webpack.js --watch --progress --colors",
-    "dev-server": "cp -R static/* build; npm start & node_modules/webpack/bin/webpack.js --watch --progress --colors",
-    "start": "DB_HOST=localhost DB_NAME=citatia node_modules/babel-cli/bin/babel-node.js server/index.js"
+    "start": "node_modules/babel-cli/bin/babel-node.js server/index.js"
   },
   "author": "",
   "repository": {

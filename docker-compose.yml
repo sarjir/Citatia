@@ -1,0 +1,17 @@
+web:
+  image: linusljung/node-web
+  links:
+    - db
+  ports:
+    - "3000:3000"
+  environment:
+    ENV: dev
+    DB_HOST: db
+    DB_PORT: 27017
+    DB_NAME: citatia
+  volumes:
+    - $CITATIA_HOME:/var/www/web
+db:
+  image: linusljung/mongodb
+  ports:
+    - "27017"
