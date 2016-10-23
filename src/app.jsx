@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import SingleCitation from 'single-citation';
+import SingleCitation from 'components/single-citation';
 
 class App extends Component {
   render() {

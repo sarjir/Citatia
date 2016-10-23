@@ -20,7 +20,7 @@ class SingleCitation extends Component {
     citation: 'Jag suger, men du sväljer',
     author: 'Sara Jirholm',
     date: '2016-09-12',
-    image: '/home/sara/Documents/Development/citatApp/src/images/H6YPV8J8TU.jpg',
+    image: 'images/background.jpg',
     actions: [
       {
         action: '\u{1F44D}',
@@ -91,7 +91,9 @@ class SingleCitation extends Component {
             className={ styles.citation }
           >
             <h1>
-              {`"${ this.props.citation }"`}
+              <span>{'“'}</span>
+                {`${ this.props.citation }`}
+              <span>{'​‌”'}</span>
             </h1>
             <div
               className={ styles.description }
