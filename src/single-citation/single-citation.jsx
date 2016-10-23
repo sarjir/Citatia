@@ -1,5 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import styles from './styles/single-citation.less';
+import twemoji from 'twemoji';
 
 class SingleCitation extends Component {
   static propTypes = {
@@ -26,7 +27,7 @@ class SingleCitation extends Component {
         count: 3
       },
       {
-        action: '\u2764',
+        action: '\u{2764}',
         count: 34
       },
       {
@@ -47,6 +48,7 @@ class SingleCitation extends Component {
       return (
         <div
           className={ styles.singleAction }
+          onMouseEnter= { this.handleOnMouseEnter }
         >
           <span
             className={ styles.actionCount }
@@ -56,8 +58,10 @@ class SingleCitation extends Component {
           <div
             className={ styles.actionSymbol }
             key={ i }
+            dangerouslySetInnerHTML={ {
+              __html: `${twemoji.parse(action.action)}`
+            } }
           >
-            { `${action.action}` }
           </div>
         </div>
       );
@@ -65,6 +69,10 @@ class SingleCitation extends Component {
 
     return actions;
   }
+
+  handleOnMouseEnter = (e) => {
+    console.log(e.target);
+  };
 
   render() {
     return (
