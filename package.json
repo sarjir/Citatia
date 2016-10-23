@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --compilers js:babel-core/register --require babel-polyfill $(find server -name \"*.test.js\")",
+    "test": "npm run test:server",
+    "test:server": "node_modules/mocha/bin/mocha --compilers js:babel-core/register --require babel-polyfill \"./server/**/test/*.test.js\"",
     "lint": "eslint . --max-warnings 0",
     "static": "./static.sh",
     "build": "npm run static && npm run build:client && npm run build:server",
