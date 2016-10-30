@@ -1,0 +1,90 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.background {
+  background-image: url("/images/background.jpg");
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position-x: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.wrapper {
+  margin-top: 10%;
+  font-family: 'Raleway', sans-serif;
+  display: flex;
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  flex-direction: column;
+  width: 70%;
+  padding: 80px 40px;
+  align-items: center;
+
+  background-image: linear-gradient(
+    to left,
+    rgba(355, 355, 355, 0) 0%,
+    rgba(355, 355, 355, 0.8) 11%,
+    rgba(355, 355, 355, 0.8) 91%,
+    rgba(355, 355, 355, 0) 100%
+    );
+}
+
+.userImage {
+  border-radius: 50%;
+  max-width: 150px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -40%;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+}
+
+.actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: space-around;
+  align-items:center;
+}
+
+.singleAction {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.actionCount {
+  margin-bottom: 7px;
+}
+
+.actionSymbol {
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  width: 30px;
+  background-color: #06ABC0;
+  border-radius: 50%;
+  cursor: pointer;
+
+  > * {
+    width: 100%;
+  }
+
+  &:hover {
+    transform: scale(1.5);
+  }
+}
