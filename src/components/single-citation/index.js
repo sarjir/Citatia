@@ -1,3 +1,3 @@
-import SingleCitation from './single-citation';
+import SingleCitation from './container/container';
 
 export default SingleCitation;

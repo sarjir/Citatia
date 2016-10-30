@@ -11,31 +11,55 @@ class SingleCitation extends Component {
     actions: PropTypes.arrayOf(
       PropTypes.shape({
         action: PropTypes.string,
-        count: PropTypes.number
+        count: PropTypes.number,
+        reactors: PropTypes.arrayOf(
+          PropTypes.shape({
+            id: PropTypes.string
+          })
+        )
       }),
     ),
   };
 
-  static defaultProps = {
-    citation: 'Jag suger, men du sväljer',
-    author: 'Sara Jirholm',
-    date: '2016-09-12',
-    image: 'images/background.jpg',
-    actions: [
-      {
-        action: '\u{1F44D}',
-        count: 3
-      },
-      {
-        action: '\u{2764}',
-        count: 34
-      },
-      {
-        action: '\u{1F602}',
-        count: 234
-      },
-    ],
-  };
+  // static defaultProps = {
+  //   citation: 'Jag suger, men du sväljer',
+  //   author: 'Sara Jirholm',
+  //   date: '2016-09-12',
+  //   image: 'images/background.jpg',
+  //   actions: [
+  //     {
+  //       action: '\u{1F44D}',
+  //       count: 3,
+  //       reactors: [
+  //         {id: '1'},
+  //         {id: '2'},
+  //         {id: '5'}
+  //       ]
+  //     },
+  //     {
+  //       action: '\u{2764}',
+  //       count: 34,
+  //       reactors: [
+  //         {id: '3'},
+  //         {id: '5'},
+  //         {id: '52'},
+  //         {id: '123'}
+  //       ]
+  //     },
+  //     {
+  //       action: '\u{1F602}',
+  //       count: 234,
+  //       reactors: [
+  //         {id: '3'},
+  //         {id: '6'},
+  //         {id: '52'},
+  //         {id: '123'},
+  //         {id: '542'},
+  //         {id: '98'}
+  //       ]
+  //     },
+  //   ],
+  // };
 
   static className = 'singleCitation-singleCitation';
 
@@ -48,12 +72,12 @@ class SingleCitation extends Component {
       return (
         <div
           className={ styles.singleAction }
-          onMouseEnter= { this.handleOnMouseEnter }
+          onTouchTap={ this.handleOnTouchTap }
         >
           <span
             className={ styles.actionCount }
           >
-            { `${action.count}` }
+            { `${action.reactors.length}` }
           </span>
           <div
             className={ styles.actionSymbol }
@@ -70,9 +94,9 @@ class SingleCitation extends Component {
     return actions;
   }
 
-  handleOnMouseEnter = (e) => {
-    console.log(e.target);
-  };
+  handleOnTouchTap = (e) => {
+    console.log(e);
+  }
 
   render() {
     return (
