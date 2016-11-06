@@ -10,7 +10,6 @@ const initialState = [{
   actions: [
     {
       action: '\u{1F44D}',
-      count: 3,
       reactors: [
         {id: '1'},
         {id: '2'},
@@ -19,7 +18,6 @@ const initialState = [{
     },
     {
       action: '\u{2764}',
-      count: 34,
       reactors: [
         {id: '3'},
         {id: '5'},
@@ -29,7 +27,6 @@ const initialState = [{
     },
     {
       action: '\u{1F602}',
-      count: 234,
       reactors: [
         {id: '3'},
         {id: '6'},
@@ -43,5 +40,23 @@ const initialState = [{
 }];
 
 export function reducer(state = initialState, action){
+  switch (action.type) {
+    case ADD_REACTION_COUNT:
+      return {
+        ...state[action.actionId],
+        reactors: [
+          ...state[action.actionId].reactors,
+          { id: action.reactorId }
+        ]
+      }
+  }
   return state;
+}
+
+export function addReactionCount(actionId, reactorId) {
+  return {
+    type: ADD_REACTION_COUNT,
+    actionId,
+    reactorId
+  }
 }
