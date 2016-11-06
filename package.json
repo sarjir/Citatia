@@ -4,12 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha --compilers js:babel-core/register --require babel-polyfill $(find server -name \"*.test.js\")",
+    "test": "mocha --compilers js:babel-core/register --require babel-polyfill $(find server -name \"*.test.js\")",
     "lint": "eslint . --max-warnings 0",
     "static": "./static.sh",
-    "build": "npm run static; node_modules/webpack/bin/webpack.js --progress --colors",
-    "dev": "npm run static; node_modules/webpack/bin/webpack.js --watch --progress --colors",
-    "start": "node_modules/babel-cli/bin/babel-node.js server/index.js"
+    "build": "npm run static && npm run build:client && npm run build:server",
+    "build:client": "webpack --progress --colors",
+    "build:server": "webpack --progress --colors --config server/webpack.config.js",
+    "dev": "npm run static; webpack --watch --progress --colors",
+    "start": "node build/js/server.js",
+    "start:dev": "nodemon build/js/server.js"
   },
   "author": "",
   "repository": {
@@ -49,7 +52,8 @@
     "sinon-as-promised": "^4.0.2",
     "sinon-mongoose": "^1.3.0",
     "style-loader": "^0.13.1",
-    "webpack": "^1.13.1"
+    "webpack": "^1.13.1",
+    "webpack-node-externals": "^1.5.4"
   },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",

@@ -1,5 +1,5 @@
 web:
-  image: linusljung/node-web
+  image: linusljung/node-web:1
   links:
     - db
   ports:
