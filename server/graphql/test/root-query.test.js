@@ -11,9 +11,14 @@ import sinon from 'sinon';
 import mongoose from 'mongoose';
 import 'sinon-mongoose';
 import 'sinon-as-promised';
-
-import { User as UserModel } from '../../models';
+import { range } from '../../lib/util';
 import bcrypt from 'bcrypt-nodejs';
+import { citation as citationConfig } from '../../config';
+
+import {
+	User as UserModel,
+	Citation as CitationModel
+} from '../../models';
 
 const Schema = new GraphQLSchema({
 	query: rootQuery,
@@ -181,5 +186,125 @@ describe('endpoint "login"', function() {
 				done(e);
 			}
 		});
+	});
+});
+
+describe.skip('endpoint "citation"', function() {
+	const numberOfCitations = citationConfig.defaultLimit + 1;
+
+	function createCollection(limit = citationConfig.defaultLimit) {
+		return range(limit).map((undefined, i) => ({
+			text: 'citation' + i,
+			author: 'author' + i,
+			publisher: {
+				_id: mongoose.Types.ObjectId('00000000000' + i)
+			},
+			date: new Date(i),
+			createdAt: new Date(i),
+			comments: generateComments(i),
+			reactions: generateReactions(i)
+		}));
+	}
+
+	function generateComments(i) {
+		return range(2).map((undefined, j) => ({
+			text: 'Comment' + i + j,
+			author: mongoose.Types.ObjectId('0000000000' + i + j),
+			createdAt: new Date(i + j)
+		}));
+	}
+
+	function generateReactions(i) {
+		return range(3).map(() => ({
+			type: 1,
+			reactors: [
+				{
+					id: mongoose.Types.ObjectId('00000000000' + i)
+				}
+			]
+		}));
+	}
+
+	context('limits and pagination', function() {
+		it('should return a collection with a default limit', function (done) {
+			const CitationModelMock = sinon.mock(CitationModel);
+			const collection = createCollection();
+
+			CitationModelMock
+				.expects('find')
+				.chain('limit').withArgs(citationConfig.defaultLimit)
+				.resolves(collection);
+
+			try {
+				graphql(
+					Schema,
+					`query {
+						citation {
+							collection,
+							total
+						}
+					}`
+				).then(result => {
+					CitationModelMock.verify();
+					CitationModelMock.restore();
+
+					expect(result).to.deep.equal({
+						citation: {
+							collection,
+							total: numberOfCitations
+						}
+					});
+
+					done();
+				});
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		it('should return a collection with a given limit', function (done) {
+			const limit = 2;
+			const CitationModelMock = sinon.mock(CitationModel);
+			const collection = createCollection(limit);
+
+			CitationModelMock
+				.expects('find')
+				.chain('limit').withArgs(limit)
+				.resolves(collection);
+
+			try {
+				graphql(
+					Schema,
+					`query {
+						citation(limit: 2) {
+							collection,
+							total
+						}
+					}`
+				).then(result => {
+					CitationModelMock.verify();
+					CitationModelMock.restore();
+
+					expect(result).to.deep.equal({
+						citation: {
+							collection,
+							total: numberOfCitations
+						}
+					});
+
+					done();
+				});
+			} catch (e) {
+				done(e);
+			}
+		});
+	});
+
+	describe('filters', function() {
+		it('should return a collection filtered by attributes', function() {
+		});
+	});
+
+	describe('sorting', function() {
 	});
 });

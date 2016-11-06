@@ -1,11 +1,18 @@
 import {
 	GraphQLString,
+	GraphQLInt,
 	GraphQLObjectType,
 	GraphQLNonNull
 } from 'graphql';
-import UserType from './user';
+import {
+	User as UserType,
+	Citation as CitationType
+} from './types';
 
-import { User as UserModel } from '../models';
+import {
+	User as UserModel,
+	Citation as CitationModel
+} from '../models';
 
 export default new GraphQLObjectType({
 	name: 'Mutations',
@@ -33,6 +40,27 @@ export default new GraphQLObjectType({
 				return UserModel.create({
 					...args,
 					_username: args.username
+				});
+			}
+		},
+		addCitation: {
+			type: CitationType,
+			args: {
+				text: {
+					type: new GraphQLNonNull(GraphQLString)
+				},
+				author: {
+					type: new GraphQLNonNull(GraphQLString)
+				},
+				date: {
+					type: GraphQLInt
+				}
+			},
+			async resolve(rootValue, { text, author, date }) {
+				return await CitationModel.create({
+					text: text,
+					author: author,
+					date: new Date(date),
 				});
 			}
 		}

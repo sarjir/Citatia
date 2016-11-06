@@ -25,7 +25,6 @@ export default mongoose.Schema({
 	}],
 	reactions: [{
 		type: Number,
-		count: Number,
 		reactors: [{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'User'

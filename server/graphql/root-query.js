@@ -1,15 +1,23 @@
 import {
 	GraphQLString,
+	GraphQLInt,
 	GraphQLObjectType,
-	GraphQLNonNull
+	GraphQLNonNull,
+	GraphQLList
 } from 'graphql';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt-nodejs';
 import uuid from 'node-uuid';
-import UserType from './user';
+import UserType from './types/user';
+import CitationType from './types/citation';
 import mongoose from 'mongoose';
 
-import { User as UserModel } from '../models';
+import {
+	User as UserModel,
+	Citation as CitationModel
+} from '../models';
+
+import { citation as citationConfig } from 'config';
 
 const secretKey = uuid.v4();
 
@@ -101,6 +109,26 @@ export default new GraphQLObjectType({
 				} else {
 					throw "Incorrect username or password";
 				}
+			}
+		},
+		citation: {
+			type: new GraphQLList(CitationType),
+			args: {
+				limit: {
+					type: GraphQLInt,
+					defaultValue: citationConfig.defaultLimit
+				}
+			},
+			async resolve(rootValue, { limit }) {
+				const [citations, total] = await Promise.all([
+					CitationModel.find({}).limit(limit),
+					CitationModel.count({})
+				]);
+
+				return {
+					citations,
+					total
+				};
 			}
 		}
 	})
