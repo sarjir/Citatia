@@ -189,11 +189,12 @@ describe('endpoint "login"', function() {
 	});
 });
 
-describe.skip('endpoint "citation"', function() {
+describe('endpoint "citation"', function() {
 	const numberOfCitations = citationConfig.defaultLimit + 1;
 
 	function createCollection(limit = citationConfig.defaultLimit) {
 		return range(limit).map((undefined, i) => ({
+			_id: mongoose.Types.ObjectId('00000000000' + i),
 			text: 'citation' + i,
 			author: 'author' + i,
 			publisher: {
@@ -235,34 +236,42 @@ describe.skip('endpoint "citation"', function() {
 				.chain('limit').withArgs(citationConfig.defaultLimit)
 				.resolves(collection);
 
-			try {
-				graphql(
-					Schema,
-					`query {
-						citation {
-							collection,
-							total
-						}
-					}`
-				).then(result => {
-					CitationModelMock.verify();
-					CitationModelMock.restore();
+			CitationModelMock
+				.expects('count')
+				.resolves(numberOfCitations);
 
-					expect(result).to.deep.equal({
+			graphql(
+				Schema,
+				`query {
+					citation {
+						collection {
+							_id
+						},
+						total
+					}
+				}`
+			)
+			.then(result => {
+				CitationModelMock.verify();
+				CitationModelMock.restore();
+
+				expect(result).to.deep.equal({
+					data: {
 						citation: {
-							collection,
+							collection: collection.map(item => ({ _id: item._id.toString() })),
 							total: numberOfCitations
 						}
-					});
-
-					done();
+					}
 				});
-			} catch (e) {
+
+				done();
+			})
+			.catch(e => {
 				done(e);
-			}
+			});
 		});
 
-		it('should return a collection with a given limit', function (done) {
+		it.skip('should return a collection with a given limit', function (done) {
 			const limit = 2;
 			const CitationModelMock = sinon.mock(CitationModel);
 			const collection = createCollection(limit);
@@ -276,8 +285,8 @@ describe.skip('endpoint "citation"', function() {
 				graphql(
 					Schema,
 					`query {
-						citation(limit: 2) {
-							collection,
+						citation {
+							collection(limit: 2),
 							total
 						}
 					}`
@@ -300,11 +309,11 @@ describe.skip('endpoint "citation"', function() {
 		});
 	});
 
-	describe('filters', function() {
+	describe.skip('filters', function() {
 		it('should return a collection filtered by attributes', function() {
 		});
 	});
 
-	describe('sorting', function() {
+	describe.skip('sorting', function() {
 	});
 });

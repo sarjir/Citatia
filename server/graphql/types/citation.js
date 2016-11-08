@@ -15,9 +15,6 @@ const Citation = new GraphQLObjectType({
 	fields: () => ({
 		_id: {
 			type: GraphQLString,
-			resolve({ _id }) {
-				return _id.toString();
-			}
 		},
 		text: {
 			type: new GraphQLNonNull(GraphQLString)
