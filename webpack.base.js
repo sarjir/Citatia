@@ -4,7 +4,7 @@ module.exports = {
     filename: "[name].js"
   },
   resolve: {
-    extensions: ["", ".webpack.js", ".web.js", ".js", ".jsx", ".less"]
+		extensions: ["", ".webpack.js", ".web.js", ".js", ".jsx", ".less", ".json"]
   },
   module: {
     loaders: [
@@ -20,7 +20,12 @@ module.exports = {
         test: /\.less$/,
         exclude: /node_modules/,
         loader: 'style-loader!css-loader?camelCase&modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!less-loader'
-      }
+      },
+			{
+				test: /\.json$/,
+				exclude: /node_modules/,
+				loader: 'json-loader'
+			}
     ]
   }
 };

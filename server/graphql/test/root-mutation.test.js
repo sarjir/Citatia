@@ -1,6 +1,7 @@
 import {
 	GraphQLSchema,
-	graphql
+	graphql,
+	GraphQLError
 } from 'graphql';
 import { expect, assert } from 'chai';
 import {
@@ -12,7 +13,10 @@ import sinon from 'sinon';
 import 'sinon-mongoose';
 import 'sinon-as-promised';
 
-import { User as UserModel } from '../../models';
+import {
+	User as UserModel,
+	Citation as CitationModel
+} from 'models';
 
 const Schema = new GraphQLSchema({
 	query: rootQuery,
@@ -103,5 +107,80 @@ describe('endpoint "addUser"', function() {
 		} catch (e) {
 			done(e);
 		}
+	});
+});
+
+describe('endpoint "addCitation"', function() {
+	it('Should return the created citation', function(done) {
+		const queryString = `mutation {
+			citation: addCitation(
+				text: "Some quote",
+				author: "Linus Ljung",
+				date: 0
+			) {
+				_id
+				text
+				author
+				date
+			}
+		}`;
+
+		const CitationModelMock = sinon.mock(CitationModel);
+
+		CitationModelMock.expects('create')
+			.withArgs({
+				text: 'Some quote',
+				author: 'Linus Ljung',
+				date: new Date(0)
+			})
+			.resolves({
+				_id: 'id',
+				text: 'Some quote',
+				author: 'Linus Ljung',
+				date: new Date(0),
+				createdAt: new Date(0)
+			});
+
+		graphql(Schema, queryString)
+			.then(result => {
+				CitationModelMock.verify();
+				CitationModelMock.restore();
+
+				try {
+					expect(result).to.deep.equal({
+						data: {
+							citation: {
+								_id: 'id',
+								text: 'Some quote',
+								author: 'Linus Ljung',
+								date: 0,
+							}
+						}
+					});
+
+					done();
+				} catch (e) {
+					done(e);
+				}
+			}).catch((e) => {
+				done(e);
+			});
+	});
+
+	it('should throw an error if required fields are missing', function(done) {
+		const queryString = `mutation {
+			citation: addCitation() {
+				_id
+				text
+				author
+				date
+			}
+		}`;
+
+		graphql(Schema, queryString)
+			.then(result => {
+				expect(result.errors[0]).to.be.an.instanceOf(GraphQLError);
+				done();
+			});
 	});
 });

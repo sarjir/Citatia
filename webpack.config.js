@@ -9,4 +9,3 @@ module.exports = Object.assign({}, baseConfig, {
 		root: [path.resolve(__dirname, 'src')]
 	})
 });
-

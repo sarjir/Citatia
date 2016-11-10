@@ -6,10 +6,13 @@ import {
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt-nodejs';
 import uuid from 'node-uuid';
-import UserType from './user';
+import UserType from './types/user';
+import { CitationCollection as CitationCollectionType } from './types';
 import mongoose from 'mongoose';
 
-import { User as UserModel } from '../models';
+import {
+	User as UserModel
+} from '../models';
 
 const secretKey = uuid.v4();
 
@@ -21,7 +24,7 @@ function authenticateUser(username, password, user) {
 	try {
 		return bcrypt.compareSync(password, user.password);
 	} catch (e) {
-		console.error(e);
+		console.error(e); // eslint-disable-line no-console
 		return false;
 	}
 }
@@ -101,6 +104,12 @@ export default new GraphQLObjectType({
 				} else {
 					throw "Incorrect username or password";
 				}
+			}
+		},
+		citation: {
+			type: CitationCollectionType,
+			resolve() {
+				return {};
 			}
 		}
 	})

@@ -11,9 +11,14 @@ import sinon from 'sinon';
 import mongoose from 'mongoose';
 import 'sinon-mongoose';
 import 'sinon-as-promised';
-
-import { User as UserModel } from '../../models';
+import { range } from '../../lib/util';
 import bcrypt from 'bcrypt-nodejs';
+import { citation as citationConfig } from '../../config';
+
+import {
+	User as UserModel,
+	Citation as CitationModel
+} from '../../models';
 
 const Schema = new GraphQLSchema({
 	query: rootQuery,
@@ -181,5 +186,175 @@ describe('endpoint "login"', function() {
 				done(e);
 			}
 		});
+	});
+});
+
+describe('endpoint "citation"', function() {
+	const numberOfCitations = citationConfig.defaultLimit + 1;
+
+	function createCollection(limit = citationConfig.defaultLimit) {
+		return range(limit).map((undefined, i) => ({
+			_id: mongoose.Types.ObjectId('00000000000' + i),
+			text: 'citation' + i,
+			author: 'author' + i,
+			publisher: {
+				_id: mongoose.Types.ObjectId('00000000000' + i)
+			},
+			date: new Date(i),
+			createdAt: new Date(i),
+			comments: generateComments(i),
+			reactions: generateReactions(i)
+		}));
+	}
+
+	function generateComments(i) {
+		return range(2).map((undefined, j) => ({
+			text: 'Comment' + i + j,
+			author: mongoose.Types.ObjectId('0000000000' + i + j),
+			createdAt: new Date(i + j)
+		}));
+	}
+
+	function generateReactions(i) {
+		return range(3).map(() => ({
+			type: 1,
+			reactors: [
+				{
+					id: mongoose.Types.ObjectId('00000000000' + i)
+				}
+			]
+		}));
+	}
+
+	context('limits and offsets', function() {
+		function prepare(modelMock, collection, limit = citationConfig.defaultLimit) {
+			modelMock
+				.expects('find')
+				.chain('limit').withArgs(limit)
+				.resolves(collection);
+
+			modelMock
+				.expects('count')
+				.resolves(numberOfCitations);
+		}
+
+		function verify(result, collection, limit = citationConfig.defaultLimit) {
+			expect(result.data.citation.collection.length).to.equal(limit);
+			expect(result).to.deep.equal({
+				data: {
+					citation: {
+						collection: collection.map(item => ({ _id: item._id.toString() })),
+						total: numberOfCitations
+					}
+				}
+			});
+		}
+
+		it('should return a collection with a default limit', function (done) {
+			const CitationModelMock = sinon.mock(CitationModel);
+			const collection = createCollection();
+
+			prepare(CitationModelMock, collection);
+
+			graphql(
+				Schema,
+				`query {
+					citation {
+						collection {
+							_id
+						},
+						total
+					}
+				}`
+			)
+			.then(result => {
+				CitationModelMock.verify();
+				CitationModelMock.restore();
+
+				verify(result, collection);
+
+				done();
+			})
+			.catch(e => {
+				done(e);
+			});
+		});
+
+		it('should return a collection with a given limit', function (done) {
+			const limit = 2;
+			const CitationModelMock = sinon.mock(CitationModel);
+			const collection = createCollection(limit);
+
+			prepare(CitationModelMock, collection, limit);
+
+			try {
+				graphql(
+					Schema,
+					`query {
+						citation {
+							collection(limit: ${limit}) {
+								_id
+							},
+							total
+						}
+					}`
+				).then(result => {
+					CitationModelMock.verify();
+					CitationModelMock.restore();
+
+					verify(result, collection, limit);
+
+					done();
+				});
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		it('should return a collection with a given offset', function (done) {
+			const CitationModelMock = sinon.mock(CitationModel);
+			const collection = createCollection();
+			const offset = 5;
+
+			CitationModelMock.expects('find')
+				.chain('skip', offset)
+				.chain('limit', citationConfig.defaultLimit)
+				.resolves(collection);
+
+			CitationModelMock
+				.expects('count')
+				.resolves(numberOfCitations);
+
+			try {
+				graphql(
+					Schema,
+					`query {
+						citation {
+							collection(offset: ${offset}) {
+								_id
+							}
+							total
+						}
+					}`
+				).then(result => {
+					CitationModelMock.verify();
+					CitationModelMock.restore();
+
+					verify(result, collection);
+
+					done();
+				});
+			} catch (e) {
+				done(e);
+			}
+		});
+	});
+
+	describe.skip('filters', function() {
+		it('should return a collection filtered by attributes', function() {
+		});
+	});
+
+	describe.skip('sorting', function() {
 	});
 });
