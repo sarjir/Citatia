@@ -226,7 +226,7 @@ describe('endpoint "citation"', function() {
 		}));
 	}
 
-	context('limits and pagination', function() {
+	context('limits and offsets', function() {
 		function prepare(modelMock, collection, limit = citationConfig.defaultLimit) {
 			modelMock
 				.expects('find')
@@ -237,8 +237,8 @@ describe('endpoint "citation"', function() {
 				.expects('count')
 				.resolves(numberOfCitations);
 		}
-		
-		function verify(result, collection, limit) {
+
+		function verify(result, collection, limit = citationConfig.defaultLimit) {
 			expect(result.data.citation.collection.length).to.equal(limit);
 			expect(result).to.deep.equal({
 				data: {
@@ -271,7 +271,7 @@ describe('endpoint "citation"', function() {
 				CitationModelMock.verify();
 				CitationModelMock.restore();
 
-				verify(result, collection, citationConfig.defaultLimit);
+				verify(result, collection);
 
 				done();
 			})
@@ -284,7 +284,7 @@ describe('endpoint "citation"', function() {
 			const limit = 2;
 			const CitationModelMock = sinon.mock(CitationModel);
 			const collection = createCollection(limit);
-			
+
 			prepare(CitationModelMock, collection, limit);
 
 			try {
@@ -292,7 +292,7 @@ describe('endpoint "citation"', function() {
 					Schema,
 					`query {
 						citation {
-							collection(limit: 2) {
+							collection(limit: ${limit}) {
 								_id
 							},
 							total
@@ -303,6 +303,44 @@ describe('endpoint "citation"', function() {
 					CitationModelMock.restore();
 
 					verify(result, collection, limit);
+
+					done();
+				});
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		it('should return a collection with a given offset', function (done) {
+			const CitationModelMock = sinon.mock(CitationModel);
+			const collection = createCollection();
+			const offset = 5;
+
+			CitationModelMock.expects('find')
+				.chain('skip', offset)
+				.chain('limit', citationConfig.defaultLimit)
+				.resolves(collection);
+
+			CitationModelMock
+				.expects('count')
+				.resolves(numberOfCitations);
+
+			try {
+				graphql(
+					Schema,
+					`query {
+						citation {
+							collection(offset: ${offset}) {
+								_id
+							}
+							total
+						}
+					}`
+				).then(result => {
+					CitationModelMock.verify();
+					CitationModelMock.restore();
+
+					verify(result, collection);
 
 					done();
 				});

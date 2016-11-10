@@ -18,10 +18,17 @@ const CitationCollection = new GraphQLObjectType({
 				limit: {
 					type: GraphQLInt,
 					defaultValue: citationConfig.defaultLimit
+				},
+				offset: {
+					type: GraphQLInt,
+					defaultValue: 0
 				}
 			},
-			resolve(source, { limit }) {
-				return CitationModel.find().limit(limit);
+			resolve(source, { limit, offset }) {
+				return CitationModel
+					.find()
+					.skip(offset)
+					.limit(limit);
 			}
 		},
 		total: {
