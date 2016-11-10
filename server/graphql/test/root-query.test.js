@@ -227,18 +227,34 @@ describe('endpoint "citation"', function() {
 	}
 
 	context('limits and pagination', function() {
+		function prepare(modelMock, collection, limit = citationConfig.defaultLimit) {
+			modelMock
+				.expects('find')
+				.chain('limit').withArgs(limit)
+				.resolves(collection);
+
+			modelMock
+				.expects('count')
+				.resolves(numberOfCitations);
+		}
+		
+		function verify(result, collection, limit) {
+			expect(result.data.citation.collection.length).to.equal(limit);
+			expect(result).to.deep.equal({
+				data: {
+					citation: {
+						collection: collection.map(item => ({ _id: item._id.toString() })),
+						total: numberOfCitations
+					}
+				}
+			});
+		}
+
 		it('should return a collection with a default limit', function (done) {
 			const CitationModelMock = sinon.mock(CitationModel);
 			const collection = createCollection();
 
-			CitationModelMock
-				.expects('find')
-				.chain('limit').withArgs(citationConfig.defaultLimit)
-				.resolves(collection);
-
-			CitationModelMock
-				.expects('count')
-				.resolves(numberOfCitations);
+			prepare(CitationModelMock, collection);
 
 			graphql(
 				Schema,
@@ -255,14 +271,7 @@ describe('endpoint "citation"', function() {
 				CitationModelMock.verify();
 				CitationModelMock.restore();
 
-				expect(result).to.deep.equal({
-					data: {
-						citation: {
-							collection: collection.map(item => ({ _id: item._id.toString() })),
-							total: numberOfCitations
-						}
-					}
-				});
+				verify(result, collection, citationConfig.defaultLimit);
 
 				done();
 			})
@@ -271,22 +280,21 @@ describe('endpoint "citation"', function() {
 			});
 		});
 
-		it.skip('should return a collection with a given limit', function (done) {
+		it('should return a collection with a given limit', function (done) {
 			const limit = 2;
 			const CitationModelMock = sinon.mock(CitationModel);
 			const collection = createCollection(limit);
-
-			CitationModelMock
-				.expects('find')
-				.chain('limit').withArgs(limit)
-				.resolves(collection);
+			
+			prepare(CitationModelMock, collection, limit);
 
 			try {
 				graphql(
 					Schema,
 					`query {
 						citation {
-							collection(limit: 2),
+							collection(limit: 2) {
+								_id
+							},
 							total
 						}
 					}`
@@ -294,12 +302,7 @@ describe('endpoint "citation"', function() {
 					CitationModelMock.verify();
 					CitationModelMock.restore();
 
-					expect(result).to.deep.equal({
-						citation: {
-							collection,
-							total: numberOfCitations
-						}
-					});
+					verify(result, collection, limit);
 
 					done();
 				});
