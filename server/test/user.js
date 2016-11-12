@@ -1,7 +1,5 @@
 import sinon from 'sinon';
 import { expect } from 'chai';
-import mongoose from 'mongoose';
-import sinonMongoose from 'sinon-mongoose';
 import user from '../models/user';
 
 const UserModel = user();
@@ -16,7 +14,6 @@ describe('Get all users', function () {
 		});
 
 		UserModel.find(function(err, result) {
-			console.log(result);
 			UserModelMock.verify();
 			UserModelMock.restore();
 			expect(result.status).to.be.true;

@@ -21,7 +21,7 @@ function authenticateUser(username, password, user) {
 	try {
 		return bcrypt.compareSync(password, user.password);
 	} catch (e) {
-		console.error(e);
+		console.error(e); //eslint-disable-line no-console
 		return false;
 	}
 }
