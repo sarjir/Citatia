@@ -1,7 +1,7 @@
 import {
 	GraphQLString,
 	GraphQLInt,
-	GraphQLObjectType,
+	GraphQLObjectType
 } from 'graphql';
 
 const User = new GraphQLObjectType({

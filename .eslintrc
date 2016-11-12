@@ -11,6 +11,7 @@
     "mocha": true
   },
   "rules": {
-    "semi": [2, "always"]
+    "semi": [2, "always"],
+    "comma-dangle": [2, "never"]
   }
 }
