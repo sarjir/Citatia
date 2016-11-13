@@ -11,9 +11,14 @@ import sinon from 'sinon';
 import mongoose from 'mongoose';
 import 'sinon-mongoose';
 import 'sinon-as-promised';
-import { range } from '../../lib/util';
 import bcrypt from 'bcrypt-nodejs';
-import { citation as citationConfig } from '../../config';
+import { verify } from 'helpers/test';
+import {
+	createLimitCollection,
+	prepareLimitMocks,
+	verifyLimitCollection,
+	total
+} from './helpers/citation';
 
 import {
 	User as UserModel,
@@ -71,8 +76,13 @@ describe('endpoint "user"', function() {
 						}
 					}`
 			).then(result => {
-				UserModelMock.verify();
-				UserModelMock.restore();
+				try {
+					UserModelMock.verify();
+
+					UserModelMock.restore();
+				} catch (e) {
+					return done(e);
+				}
 
 				try {
 					expect(result).to.deep.equal({
@@ -115,11 +125,16 @@ describe('endpoint "login"', function() {
 			  token: login(username: "Linus", password: "123")
 			}`
 		).then(result => {
-			UserModelMock.verify();
-			UserModelMock.restore();
+			try {
+				UserModelMock.verify();
+				bcryptMock.verify();
 
-			bcryptMock.verify();
-			bcryptMock.restore();
+				UserModelMock.restore();
+				bcryptMock.restore();
+			} catch (e) {
+				return done(e);
+			}
+
 			try {
 				expect(result).to.have.deep.property('data.token').to.be.a('string');
 				done();
@@ -142,8 +157,13 @@ describe('endpoint "login"', function() {
 			  token: login(username: "Linus", password: "123")
 			}`
 		).then(result => {
-			UserModelMock.verify();
-			UserModelMock.restore();
+			try {
+				UserModelMock.verify();
+
+				UserModelMock.restore();
+			} catch (e) {
+				return done(e);
+			}
 
 			try {
 				expect(result.errors).to.be.an('array');
@@ -173,11 +193,16 @@ describe('endpoint "login"', function() {
 			  token: login(username: "Linus", password: "123")
 			}`
 		).then(result => {
-			UserModelMock.verify();
-			UserModelMock.restore();
+			try {
+				UserModelMock.verify();
+				bcryptMock.verify();
 
-			bcryptMock.verify();
-			bcryptMock.restore();
+				UserModelMock.restore();
+				bcryptMock.restore();
+			} catch (e) {
+				return done(e);
+			}
+
 			try {
 				expect(result.errors).to.be.an('array');
 				expect(result.errors[0].message).to.equal("Incorrect username or password");
@@ -190,71 +215,12 @@ describe('endpoint "login"', function() {
 });
 
 describe('endpoint "citation"', function() {
-	const numberOfCitations = citationConfig.defaultLimit + 1;
-
-	function createCollection(limit = citationConfig.defaultLimit) {
-		return range(limit).map((undefined, i) => ({
-			_id: mongoose.Types.ObjectId('00000000000' + i),
-			text: 'citation' + i,
-			author: 'author' + i,
-			publisher: {
-				_id: mongoose.Types.ObjectId('00000000000' + i)
-			},
-			date: new Date(i),
-			createdAt: new Date(i),
-			comments: generateComments(i),
-			reactions: generateReactions(i)
-		}));
-	}
-
-	function generateComments(i) {
-		return range(2).map((undefined, j) => ({
-			text: 'Comment' + i + j,
-			author: mongoose.Types.ObjectId('0000000000' + i + j),
-			createdAt: new Date(i + j)
-		}));
-	}
-
-	function generateReactions(i) {
-		return range(3).map(() => ({
-			type: 1,
-			reactors: [
-				{
-					id: mongoose.Types.ObjectId('00000000000' + i)
-				}
-			]
-		}));
-	}
-
 	context('limits and offsets', function() {
-		function prepare(modelMock, collection, limit = citationConfig.defaultLimit) {
-			modelMock
-				.expects('find')
-				.chain('limit').withArgs(limit)
-				.resolves(collection);
-
-			modelMock
-				.expects('count')
-				.resolves(numberOfCitations);
-		}
-
-		function verify(result, collection, limit = citationConfig.defaultLimit) {
-			expect(result.data.citation.collection.length).to.equal(limit);
-			expect(result).to.deep.equal({
-				data: {
-					citation: {
-						collection: collection.map(item => ({ _id: item._id.toString() })),
-						total: numberOfCitations
-					}
-				}
-			});
-		}
-
 		it('should return a collection with a default limit', function (done) {
 			const CitationModelMock = sinon.mock(CitationModel);
-			const collection = createCollection();
+			const collection = createLimitCollection();
 
-			prepare(CitationModelMock, collection);
+			prepareLimitMocks(CitationModelMock, collection);
 
 			graphql(
 				Schema,
@@ -268,10 +234,14 @@ describe('endpoint "citation"', function() {
 				}`
 			)
 			.then(result => {
-				CitationModelMock.verify();
-				CitationModelMock.restore();
+				try {
+					verify(result, [CitationModelMock]);
+					verifyLimitCollection(result, collection);
+				} catch (e) {
+					return done(e);
+				}
 
-				verify(result, collection);
+				CitationModelMock.restore();
 
 				done();
 			})
@@ -283,9 +253,9 @@ describe('endpoint "citation"', function() {
 		it('should return a collection with a given limit', function (done) {
 			const limit = 2;
 			const CitationModelMock = sinon.mock(CitationModel);
-			const collection = createCollection(limit);
+			const collection = createLimitCollection(limit);
 
-			prepare(CitationModelMock, collection, limit);
+			prepareLimitMocks(CitationModelMock, collection, limit);
 
 			try {
 				graphql(
@@ -299,10 +269,14 @@ describe('endpoint "citation"', function() {
 						}
 					}`
 				).then(result => {
-					CitationModelMock.verify();
-					CitationModelMock.restore();
+					try {
+						verify(result, [CitationModelMock]);
+						verifyLimitCollection(result, collection, limit);
 
-					verify(result, collection, limit);
+						CitationModelMock.restore();
+					} catch (e) {
+						return done(e);
+					}
 
 					done();
 				});
@@ -313,17 +287,10 @@ describe('endpoint "citation"', function() {
 
 		it('should return a collection with a given offset', function (done) {
 			const CitationModelMock = sinon.mock(CitationModel);
-			const collection = createCollection();
+			const collection = createLimitCollection();
 			const offset = 5;
 
-			CitationModelMock.expects('find')
-				.chain('skip', offset)
-				.chain('limit', citationConfig.defaultLimit)
-				.resolves(collection);
-
-			CitationModelMock
-				.expects('count')
-				.resolves(numberOfCitations);
+			prepareLimitMocks(CitationModelMock, collection, undefined, offset);
 
 			try {
 				graphql(
@@ -337,10 +304,14 @@ describe('endpoint "citation"', function() {
 						}
 					}`
 				).then(result => {
-					CitationModelMock.verify();
-					CitationModelMock.restore();
+					try {
+						verify(result, [CitationModelMock]);
+						verifyLimitCollection(result, collection);
 
-					verify(result, collection);
+						CitationModelMock.restore();
+					} catch (e) {
+						return done(e);
+					}
 
 					done();
 				});
@@ -350,8 +321,75 @@ describe('endpoint "citation"', function() {
 		});
 	});
 
-	describe.skip('filters', function() {
-		it('should return a collection filtered by attributes', function() {
+	describe('filters', function() {
+		it('should return a collection filtered by attributes', function(done) {
+			const CitationModelMock = sinon.mock(CitationModel);
+
+			CitationModelMock
+				.expects('find')
+				.withArgs({
+					author: "Linus",
+					date: {
+						$gte: 0,
+						$lte: 1
+					}
+				})
+				.chain('skip')
+				.chain('limit')
+				.resolves([]);
+
+			CitationModelMock
+				.expects('find')
+				.withArgs({
+					author: "Linus",
+					date: {
+						$gte: 0
+					}
+				})
+				.chain('skip')
+				.chain('limit')
+				.resolves([]);
+
+			try {
+				graphql(
+					Schema,
+					`query {
+						citation1: citation {
+							collection(filter: {
+								author: "Linus",
+								date: {
+									from: 0,
+									to: 1
+								}
+							}) {
+								_id
+							}
+						},
+						citation2: citation {
+							collection(filter: {
+								author: "Linus",
+								date: {
+									from: 0
+								}
+							}) {
+								_id
+							}
+						}
+					}`
+				).then(result => {
+					try {
+						verify(result, [CitationModelMock]);
+
+						CitationModelMock.restore();
+					} catch (e) {
+						return done(e);
+					}
+
+					done();
+				});
+			} catch (e) {
+				done(e);
+			}
 		});
 	});
 
